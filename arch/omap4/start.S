@@ -5,3 +5,7 @@ _start:
 		bl aboot
 		b .
 
+.global enable_irqs
+enable_irqs:
+	cpsie I
+	bx lr
