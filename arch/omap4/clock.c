@@ -436,10 +436,6 @@ static void enable_all_clocks(void)
 void prcm_init(void)
 {
 	u32 clk_index;
-	/* Get the sysclk speed from cm_sys_clksel
-	 * Set the CM_SYS_CLKSEL in case ROM code has not set
-	 */
-	writel(0x7,CM_SYS_CLKSEL);
 	clk_index = readl(CM_SYS_CLKSEL);
 	if (!clk_index)
 		return;
