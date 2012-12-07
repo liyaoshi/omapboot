@@ -44,8 +44,17 @@ extern unsigned char iboot_gp_data[];
 extern unsigned iboot_gp_size;
 
 #ifdef EMBED_IBOOT_HS
-extern unsigned char iboot_hs_data[];
-extern unsigned iboot_hs_size;
+#if defined (CONFIG_IS_OMAP4)
+extern unsigned char iboot_hs_4430_data[];
+extern unsigned iboot_hs_4430_size;
+extern unsigned char iboot_hs_4460_data[];
+extern unsigned iboot_hs_4460_size;
+extern unsigned char iboot_hs_4470_data[];
+extern unsigned iboot_hs_4470_size;
+#elif defined (CONFIG_IS_OMAP5)
+extern unsigned char iboot_hs_5430_data[];
+extern unsigned iboot_hs_5430_size;
+#endif
 #endif
 
 extern unsigned char sboot_data[];
@@ -59,5 +68,18 @@ typedef struct tocentry {
 	unsigned spare;
 	char name[12];
 } tocentry;
+
+/*
+ * See TRM for OMAP4, OMAP5 ASIC ID Structure
+ */
+struct chip_info {
+	uint16_t chip;
+	char rom_rev;
+	char IDEN[20];
+	char MPKH[32];
+	uint32_t crc0;
+	uint32_t crc1;
+	char proc_type[8];
+};
 
 #endif

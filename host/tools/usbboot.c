@@ -33,9 +33,12 @@
 #include <stdint.h>
 #include <fcntl.h>
 #include <string.h>
+#include <arpa/inet.h>
 #include "../../include/common/user_params.h"
 #include "usb.h"
 #include "usbboot.h"
+
+static struct chip_info chip;
 
 static char *usb_boot_read_chip_info(usb_handle *usb)
 {
@@ -50,7 +53,13 @@ static char *usb_boot_read_chip_info(usb_handle *usb)
 	fprintf(stderr,"reading ASIC ID\n");
 	usb_write(usb, &msg_getid, sizeof(msg_getid));
 	usb_read(usb, id, sizeof(id));
-
+	memcpy(&chip.chip, &id[OFF_CHIP+0], 2);
+	chip.chip = ntohs(chip.chip);
+	chip.rom_rev = id[OFF_ROM_REV];
+	memcpy(chip.IDEN, &id[OFF_ID], 20);
+	memcpy(chip.MPKH, &id[OFF_MPKH], 32);
+	chip.crc0 = ntohl(*(uint32_t *)&id[73]);
+	chip.crc1 = ntohl(*(uint32_t *)&id[77]);
 	fprintf(stderr,"CHIP: %02x%02x\n", id[OFF_CHIP+0], id[OFF_CHIP+1]);
 	fprintf(stderr, "rom minor version: %02X\n", id[OFF_ROM_REV]);
 	fprintf(stderr,"IDEN: ");
@@ -73,6 +82,7 @@ static char *usb_boot_read_chip_info(usb_handle *usb)
 		strcpy(proc_type, "GP");
 	}
 
+	strcpy(chip.proc_type, proc_type);
 	return proc_type;
 }
 
@@ -247,13 +257,34 @@ int main(int argc, char **argv)
 							&sz);
 #ifdef EMBED_IBOOT_HS
 					if (!data) {
+						switch (chip.chip) {
+#if defined (CONFIG_IS_OMAP4)
+						case 0x4430:
+							data = iboot_hs_4430_data;
+							sz = iboot_hs_4430_size;
+							break;
+						case 0x4440:
+							data = iboot_hs_4460_data;
+							sz = iboot_hs_4460_size;
+							break;
+						case 0x4470:
+							data = iboot_hs_4470_data;
+							sz = iboot_hs_4470_size;
+							break;
+#elif defined (CONFIG_IS_OMAP5)
+						case 0x5430:
+							data = iboot_hs_5430_data;
+							sz = iboot_hs_5430_size;
+							break;
+#endif
+						default:
+							fprintf(stderr, "Unknown cpu type\n");
+						}
+					}
+					if (data)
 						fprintf(stderr, "using built-in"
 						" HS iboot of size %d-KB\n",
-							iboot_hs_size/1024);
-
-						data = iboot_hs_data;
-						sz = iboot_hs_size;
-					}
+								sz/1024);
 #endif
 				} else {
 					fprintf(stderr, "using built-in GP "
