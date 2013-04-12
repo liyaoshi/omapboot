@@ -124,6 +124,55 @@ static char *long_to_hexstring(char *buf, unsigned long u, int len, uint flag)
 	return &buf[pos];
 }
 
+static int nibble_to_hex(char nb)
+{
+	switch(nb) {
+	case 'a'...'f':
+		return nb - 'a' + 0xa;
+
+	case 'A'...'F':
+		return nb - 'A' + 0xa;
+
+	case  '0'...'9':
+		return nb - '0';
+
+	default:;
+	}
+
+	return -1;
+}
+
+unsigned long strtoul(const char *cp, char **endp, unsigned int base)
+{
+	unsigned long result = 0;
+	int nb;
+
+	if (*cp == '0') {
+		cp++;
+		if (((*cp == 'x') || (*cp == 'X')) && cp[1]) {
+			base = 16;
+			cp++;
+		}
+		if (!base)
+			base = 8;
+	}
+	if (!base)
+		base = 10;
+
+	while (*cp) {
+		nb = nibble_to_hex(*cp);
+		if (nb == -1)
+			break;
+		result = nb + result * base;
+		cp++;
+	}
+
+	if (endp)
+		*endp = (char *)cp;
+
+	return result;
+}
+
 int vsprintf(char *str, const char *fmt, va_list ap)
 {
 	return vsnprintf(str, INT_MAX, fmt, ap);
