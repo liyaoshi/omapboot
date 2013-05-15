@@ -36,6 +36,9 @@ typedef struct boot_img_hdr boot_img_hdr;
 #define BOOT_NAME_SIZE 16
 #define BOOT_ARGS_SIZE 512
 
+#define BOOT_SERIAL_STRING_SIZE 64
+#define BOOT_VERSION_STRING_SIZE 64
+
 struct boot_img_hdr
 {
     unsigned char magic[BOOT_MAGIC_SIZE];

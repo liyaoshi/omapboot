@@ -112,13 +112,12 @@ _none:
 static void boot_settings(struct bootloader_ops *boot_ops, boot_img_hdr *hdr,
 								u32 atag)
 {
-	char serial_str[64];
+	char serial_str[BOOT_SERIAL_STRING_SIZE];
 	int serial_len;
 	u32 boot_len;
-	char aboot_version_string[64];
-	char boot_str[64];
-	char temp_cmdline[512] = EXTENDED_CMDLINE;
-	int aboot_version_length = strlen(aboot_version_string);
+	char aboot_version_string[BOOT_VERSION_STRING_SIZE];
+	char boot_str[BOOT_VERSION_STRING_SIZE];
+	char temp_cmdline[BOOT_ARGS_SIZE] = EXTENDED_CMDLINE;
 
 	serial_len = sprintf(serial_str, " androidboot.serialno=%s",
 		boot_ops->proc_ops->proc_get_serial_num());
@@ -128,8 +127,11 @@ static void boot_settings(struct bootloader_ops *boot_ops, boot_img_hdr *hdr,
 		strlen((const char *)hdr->cmdline) + 1))
 		strcat((char *)hdr->cmdline, serial_str);
 
-	strncpy(aboot_version_string, ABOOT_VERSION, aboot_version_length);
-	aboot_version_string[aboot_version_length - 1] = '\0';
+	if (sizeof(ABOOT_VERSION) > BOOT_VERSION_STRING_SIZE)
+		DBG("Version string property greater than %d, truncating.\n", BOOT_VERSION_STRING_SIZE);
+
+	strncpy(aboot_version_string, ABOOT_VERSION, BOOT_VERSION_STRING_SIZE);
+	aboot_version_string[BOOT_VERSION_STRING_SIZE - 1] = '\0';
 
 	boot_len = sprintf(boot_str, " androidboot.bootloader=%s",
 		aboot_version_string);
