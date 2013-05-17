@@ -265,7 +265,8 @@ cat MLO >> $(OUT)/$(BOARD_MLO)_OMAP$1_HS_$2_MLO ; rm MLO ; echo "Done!"
 SIGN_MLO_OMAP5_FORMAT = \
 echo "Signing eboot.bin to generate signed $(BOARD_MLO)_HS_$2_MLO..." ;\
 $(MSHIELD)/generate_MLO OMAP$1 $2 $(OUT)/eboot.bin ;\
-cat MLO >> $(OUT)/$(BOARD_MLO)_HS_$2_MLO ; rm MLO ; echo "Done!"
+./$(OUT)/mkheader $(EBOOT_TEXT_BASE) `wc -c MLO` no_gp_hdr > hsheader ;\
+cat hsheader MLO >> $(OUT)/$(BOARD_MLO)_HS_$2_MLO ; rm MLO ; rm hsheader; echo "Done!"
 
 SIGN_ULO = \
 echo "generate $@" ;\
