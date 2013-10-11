@@ -186,30 +186,27 @@ fail:
 static int usage(void)
 {
 	fprintf(stderr, "\nusbboot syntax and options:\n\n");
-	fprintf(stderr, "usbboot [ <2ndstage> ] <image>\n");
-	fprintf(stderr, "--------------------------------------------------\n");
+	fprintf(stderr, "usbboot [ <2ndstage> ] <image>\n\n");
+	fprintf(stderr, "------------------------------------------------------\n");
 	fprintf(stderr, "example: ./out/<board>/usbboot boot.img\n");
-	fprintf(stderr, "---- ---- ---- ---- OR ---- ---- ---- ----\n");
-	fprintf(stderr, "example: ./out/<board>/usbboot out/<board>/aboot.ift "
-			"boot.img\n (for HD boards, aboot.ift needs signing)");
-	fprintf(stderr, "=>this will download and execute aboot second\n"
-			"stage in SRAM and then download and execute\n"
-			"boot.img in SDRAM\n");
-	fprintf(stderr, "--------------------------------------------------\n");
+	fprintf(stderr, "                    OR\n");
+	fprintf(stderr, "         ./out/<board>/usbboot out/<board>/aboot.ift "
+			"boot.img\n\t\t(for HD boards, aboot.ift needs signing)\n");
+	fprintf(stderr, "=> Download and execute aboot second stage in SRAM\n"
+			"   and then download and execute boot.img in SDRAM\n\n");
+	fprintf(stderr, "------------------------------------------------------\n");
 	fprintf(stderr, "example: ./out/<board>/usbboot -f\n");
-	fprintf(stderr, "---- ---- ---- ---- OR ---- ---- ---- ----\n");
-	fprintf(stderr, "example: ./out/<board>/usbboot -f "
+	fprintf(stderr, "                    OR\n");
+	fprintf(stderr, "         ./out/<board>/usbboot -f "
 						"out<board>/iboot.ift\n");
-	fprintf(stderr, "=>this will download and execute iboot second\n");
-	fprintf(stderr, "stage in SRAM along with the configuration header\n");
-	fprintf(stderr, "(CH) and then enter into FASTBOOT mode\n");
-	fprintf(stderr, "--------------------------------------------------\n");
-	fprintf(stderr, "example: ./out/<board>/usbboot -M\n");
-	fprintf(stderr, "---- ---- ---- ---- OR ---- ---- ---- ----\n");
-	fprintf(stderr, "example: ./out/<board>/usbboot -m\n");
-	fprintf(stderr, "=>this will execute SDRAM memory tests from SRAM\n");
-	fprintf(stderr, "during the first stage boot.");
-	fprintf(stderr, "--------------------------------------------------\n");
+	fprintf(stderr, "=> Download and execute iboot second stage in SRAM\n"
+	                "   along with the configuration header (CH) and then\n"
+			"   enter into FASTBOOT mode\n\n");
+	fprintf(stderr, "------------------------------------------------------\n");
+	fprintf(stderr, "example: ./out/<board>/usbboot -[M/m]\n");
+	fprintf(stderr, "=> Execute SDRAM memory tests from SRAM\n"
+			"during the first stage boot.\n\n");
+	fprintf(stderr, "------------------------------------------------------\n");
 
 	return 0;
 }
