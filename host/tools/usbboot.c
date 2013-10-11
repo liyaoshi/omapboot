@@ -207,6 +207,11 @@ static int usage(void)
 	fprintf(stderr, "=> Execute SDRAM memory tests from SRAM\n"
 			"during the first stage boot.\n\n");
 	fprintf(stderr, "------------------------------------------------------\n");
+	fprintf(stderr, "example: ./out/<board>/usbboot -s <file> \n");
+	fprintf(stderr, "                    OR\n");
+	fprintf(stderr, "         ./out/<board>/usbboot -S <file> \n");
+	fprintf(stderr, "=> Download and execute <file> in internal memory\n");
+	fprintf(stderr, "   without waiting for any response.");
 
 	return 0;
 }
@@ -357,6 +362,15 @@ int main(int argc, char **argv)
 		data2 = 0;
 		sz2 = 0;
 #endif
+	} else if ((argv[1][0] == '-') &&
+		((argv[1][1] == 's') || ((argv[1][1] == 'S')))) {
+			data = load_file(argv[2], &sz);
+			if (data == 0) {
+				fprintf(stderr, "cannot load '%s'\n", argv[2]);
+				usage();
+				return -1;
+			}
+			once = 0;
 	} else {
 		if (argc < 3) {
 			fprintf(stderr, "using built-in 2ndstage.bin of size"
