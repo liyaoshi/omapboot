@@ -34,9 +34,11 @@
 #include <fcntl.h>
 #include <string.h>
 #include <arpa/inet.h>
-#include "../../include/common/user_params.h"
 #include "usb.h"
 #include "usbboot.h"
+#ifndef USBBOOT_STAND_ALONE
+#include "../../include/common/user_params.h"
+#endif
 
 static struct chip_info chip;
 
@@ -188,6 +190,7 @@ static int usage(void)
 	fprintf(stderr, "\nusbboot syntax and options:\n\n");
 	fprintf(stderr, "usbboot [ <2ndstage> ] <image>\n\n");
 	fprintf(stderr, "------------------------------------------------------\n");
+#ifndef USBBOOT_STAND_ALONE
 	fprintf(stderr, "example: ./out/<board>/usbboot boot.img\n");
 	fprintf(stderr, "                    OR\n");
 	fprintf(stderr, "         ./out/<board>/usbboot out/<board>/aboot.ift "
@@ -207,11 +210,12 @@ static int usage(void)
 	fprintf(stderr, "=> Execute SDRAM memory tests from SRAM\n"
 			"during the first stage boot.\n\n");
 	fprintf(stderr, "------------------------------------------------------\n");
+#endif
 	fprintf(stderr, "example: ./out/<board>/usbboot -s <file> \n");
 	fprintf(stderr, "                    OR\n");
 	fprintf(stderr, "         ./out/<board>/usbboot -S <file> \n");
 	fprintf(stderr, "=> Download and execute <file> in internal memory\n");
-	fprintf(stderr, "   without waiting for any response.");
+	fprintf(stderr, "   without waiting for any response.\n");
 
 	return 0;
 }
@@ -277,7 +281,6 @@ int main(int argc, char **argv)
 	usb_handle *usb = NULL;
 	int once = 1;
 	int fastboot_mode = 0;
-	char proctype[8];
 
 	if ((argc < 2) || (argc > 3)) {
 		usage();
@@ -285,12 +288,34 @@ int main(int argc, char **argv)
 	}
 
 	if ((argv[1][0] == '-') &&
+		((argv[1][1] == 's') || ((argv[1][1] == 'S')))) {
+			for (;;) {
+				usb = usb_open(match_omap_bootloader);
+				if (usb) {
+					usb_boot_read_chip_info(usb);
+					break;
+				}
+			}
+			data = load_data_file(argv[2], &sz);
+			if (data == 0) {
+				fprintf(stderr, "cannot load '%s'\n", argv[2]);
+				usage();
+				return -1;
+			}
+			once = 0;
+#ifdef USBBOOT_STAND_ALONE
+	} else {
+		fprintf (stderr, "ERROR: Option not supported in stand-alone mode\n");
+		return -1;
+	}
+#else
+	} else if ((argv[1][0] == '-') &&
 		(((argv[1][1] == 'f') || ((argv[1][1] == 'F'))) ||
 		((argv[1][1] == 'm') || ((argv[1][1] == 'M'))))) {
-
 		for (;;) {
 			usb = usb_open(match_omap_bootloader);
 			if (usb) {
+				char proctype[8];
 				strcpy(proctype, usb_boot_read_chip_info(usb));
 				if (!memcmp(proctype, "EMU", 3)) {
 					if (argc == 3)
@@ -324,7 +349,6 @@ int main(int argc, char **argv)
 					data = iboot_gp_data;
 					sz = iboot_gp_size;
 				}
-
 				if (!data)
 					return -1;
 
@@ -362,15 +386,7 @@ int main(int argc, char **argv)
 		data2 = 0;
 		sz2 = 0;
 #endif
-	} else if ((argv[1][0] == '-') &&
-		((argv[1][1] == 's') || ((argv[1][1] == 'S')))) {
-			data = load_file(argv[2], &sz);
-			if (data == 0) {
-				fprintf(stderr, "cannot load '%s'\n", argv[2]);
-				usage();
-				return -1;
-			}
-			once = 0;
+
 	} else {
 		if (argc < 3) {
 			fprintf(stderr, "using built-in 2ndstage.bin of size"
@@ -400,6 +416,7 @@ int main(int argc, char **argv)
 			return -1;
 		}
 	}
+#endif
 
 	for (;;) {
 		if (usb == NULL)
