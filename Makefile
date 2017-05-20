@@ -57,9 +57,9 @@ endif
 
 HYP_MODE := $(HYP_MODE)
 MSHIELD := $(MSHIELD)
-BOARD ?= panda
+BOARD ?= omap5uevm
 ARCH ?= arm
-MACH ?= omap4
+MACH ?= omap5
 EXTRAOPTS ?= -m32
 GENERATE_ULO = generate_ULO
 ULO = ULO
