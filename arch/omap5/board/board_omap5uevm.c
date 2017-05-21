@@ -43,22 +43,14 @@
 
 static struct partition partitions[] = {
 	{ "-", 128 },
-	{ "bootloader", 256 },
-	{ "environment", 256 },
-	/* "misc" partition is required for recovery */
-	{ "misc", 128 },
-	{ "-", 384 },
-	{ "efs", 16384 },
-	{ "crypto", 16 },
-	{ "recovery", 8*1024 },
-	{ "boot", 8*1024 },
-	{ "system", 512*1024 },
-	{ "cache", 256*1024 },
-	{ "userdata", 0},
+	{ "mlo", 128 },
+	{ "u-boot", 512 },
+	{ "enviroment", 256 },
+	{ "rootfs", 12*1024*1024 },
 	{ NULL, 0 },
 };
 
-static u8 device = DEVICE_EMMC;
+static u8 device = DEVICE_SDCARD;
 
 static struct partition * omap5uevm_get_partition(void)
 {
