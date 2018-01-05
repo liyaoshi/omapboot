@@ -44,8 +44,8 @@ $(M_NAME): $(HOST_OBJS)
 	@echo "  This Makefile is external to project omapboot's Makefile"
 	@echo "  and generates a stand-alone version of usbboot\n"
 	$(QUIET)gcc -o $@ $^ $(HOST_CFLAGS)
-	$(QUIET)rm -f $(HOST_OBJS)
-	$(QUIET)chmod +x $@
+	rm -f $(HOST_OBJS)
+	chmod +x $@
 	@echo "  $@ ready!\n"
 
 PHONY: clean

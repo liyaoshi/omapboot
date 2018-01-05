@@ -46,7 +46,7 @@ static struct partition partitions[] = {
 	{ "mlo", 128 },
 	{ "u-boot", 512 },
 	{ "enviroment", 256 },
-	{ "rootfs", 12*1024*1024 },
+	{ "rootfs", 7475*1024 },
 	{ NULL, 0 },
 };
 

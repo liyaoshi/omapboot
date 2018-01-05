@@ -26,7 +26,7 @@
  * SUCH DAMAGE.
  */
 
-#define HEAP_SIZE	0x1F400000
+#define HEAP_SIZE	0x4F400000
 
 struct mem_alloc_header;
 
